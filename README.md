@@ -6,8 +6,6 @@
 > **All Rights Reserved © 2026**
 
 ---
-https://cdn.discordapp.com/attachments/1395867280755130629/1473629910986653839/qb-multicharacter.png?ex=69998b4d&is=699839cd&hm=a6ec4e5d8a268c0acd32ff6a78d2dc0c84e124f6d6b418b94d4d9e703a519574&
-https://cdn.discordapp.com/attachments/1395867280755130629/1473629911695495210/qb-multicharacter1.png?ex=69998b4d&is=699839cd&hm=d5381041324fd074de3b9fbb18ef3209cca5515a50efb16a9adbfadfdb17ddd3&
 
 ## 📋 المتطلبات (Dependencies)
 
@@ -80,3 +78,5 @@ All Rights Reserved © 2026 — 6ha
 - نشر الكود المصدري دون إذن صريح من المطور
 للتواصل: https://discord.gg/Zk4TTQrRdh
 ```
+https://cdn.discordapp.com/attachments/1395867280755130629/1473629910986653839/qb-multicharacter.png?ex=69998b4d&is=699839cd&hm=a6ec4e5d8a268c0acd32ff6a78d2dc0c84e124f6d6b418b94d4d9e703a519574&
+https://cdn.discordapp.com/attachments/1395867280755130629/1473629911695495210/qb-multicharacter1.png?ex=69998b4d&is=699839cd&hm=d5381041324fd074de3b9fbb18ef3209cca5515a50efb16a9adbfadfdb17ddd3&
