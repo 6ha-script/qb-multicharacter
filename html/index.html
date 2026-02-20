@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>QB-Multicharacter</title>
+        
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;700&family=Almarai:wght@400;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+        
+        <!-- CSS -->
+        <link href="reset.css" rel="stylesheet" />
+        <link href="style.css" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet" />
+        
+        <!-- Scripts -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.1.3/axios.min.js"></script>
+        <script src="vue.js"></script>
+        <script src="swal2.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    </head>
+    <body>
+        <v-app data-app>
+            <div id="app">
+                <div class="container">
+                    <div class="main-screen">
+                        <!-- Loading Screen -->
+                        <transition name="fade">
+                            <div class="welcomescreen" v-if="show.loading">
+                                <div class="loading-container">
+                                    <div class="loading-circle">
+                                        <div></div>
+                                        <div></div>
+                                        <div></div>
+                                        <div></div>
+                                    </div>
+                                    <p>{{loadingText}}</p>
+                                </div>
+                            </div>
+                        </transition>
+
+                        <!-- Character Selection Screen -->
+                        <transition name="fade">
+                            <div class="character-selection-screen" v-if="show.characters">
+                                <!-- Character Info Panel -->
+                                <div class="character-info-panel" :key="selectedCharacter">
+                                    <div class="info-row">
+                                        <span class="info-label">الاسم</span>
+                                        <span class="info-value">{{selectedCharData && selectedCharData.charinfo ? selectedCharData.charinfo.firstname + ' ' + selectedCharData.charinfo.lastname : '-'}}</span>
+                                        <span class="char-number">{{selectedCharacter !== -1 ? selectedCharacter : '-'}}</span>
+                                    </div>
+                                    <div class="info-row">
+                                        <span class="info-label">تاريخ الميلاد</span>
+                                        <span class="info-value">{{selectedCharData && selectedCharData.charinfo ? selectedCharData.charinfo.birthdate : '-'}}</span>
+                                    </div>
+                                    <div class="info-row">
+                                        <span class="info-label">الجنس</span>
+                                        <span class="info-value">{{selectedCharData && selectedCharData.charinfo ? getGenderText(selectedCharData.charinfo.gender) : '-'}}</span>
+                                    </div>
+                                    <div class="info-row">
+                                        <span class="info-label">الجنسية</span>
+                                        <span class="info-value">{{selectedCharData && selectedCharData.charinfo ? selectedCharData.charinfo.nationality : '-'}}</span>
+                                    </div>
+                                    <div class="info-row">
+                                        <span class="info-label">الوظيفة</span>
+                                        <span class="info-value">{{selectedCharData && selectedCharData.job ? selectedCharData.job.label : '-'}}</span>
+                                    </div>
+                                    <div class="info-row">
+                                        <span class="info-label">النقود</span>
+                                        <span class="info-value">{{selectedCharData && selectedCharData.money ? dollar.format(selectedCharData.money.cash) + '$' : '-'}}</span>
+                                    </div>
+                                    <div class="info-row">
+                                        <span class="info-label">البنك</span>
+                                        <span class="info-value">{{selectedCharData && selectedCharData.money ? dollar.format(selectedCharData.money.bank) + '$' : '-'}}</span>
+                                    </div>
+
+                                    <!-- Action Buttons -->
+                                    <div class="action-buttons">
+                                        <button class="btn-start" @click="play_character">ابدأ</button>
+                                    </div>
+                                </div>
+
+                                <!-- Character Navigation Sidebar -->
+                                <div class="character-nav-sidebar">
+                                    <button 
+                                        v-for="index in characterAmount" 
+                                        :key="index" 
+                                        class="char-nav-btn"
+                                        :class="{active: selectedCharacter === index, empty: !characters[index]}"
+                                        @click="selectCharacterSlot(index)"
+                                    >
+                                        <i v-if="characters[index]" class="fa-solid fa-user"></i>
+                                        <i v-else class="fa-solid fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </transition>
+
+                        <!-- Character Creation Form -->
+                        <transition name="fade">
+                            <div class="character-creation-screen" v-if="show.register" :key="formKey">
+                                <!-- Creation Form Panel -->
+                                <div class="creation-form-panel">
+                                    <div class="form-row">
+                                        <span class="form-label">الاسم الأول:</span>
+                                        <span class="form-label">اسم العائلة:</span>
+                                    </div>
+                                    <div class="form-row">
+                                        <input type="text" class="form-input name-input" v-model="registerData.firstname" placeholder="الاسم الأول" />
+                                        <input type="text" class="form-input name-input" v-model="registerData.lastname" placeholder="اسم العائلة" />
+                                    </div>
+
+                                    <div class="form-row single">
+                                        <span class="form-label">الجنسية:</span>
+                                    </div>
+                                    <div class="form-row single">
+                                        <input type="text" class="form-input full" v-model="registerData.nationality" placeholder="اكتب الجنسية" />
+                                    </div>
+
+                                    <div class="form-row">
+                                        <span class="form-label">تاريخ الميلاد:</span>
+                                    </div>
+                                    <div class="form-row gender-date">
+                                        <button class="gender-btn" :class="{active: registerData.gender === 1}" @click="registerData.gender = 1">
+                                            أنثى <i class="fa-solid fa-venus"></i>
+                                        </button>
+                                        <button class="gender-btn" :class="{active: registerData.gender === 0}" @click="registerData.gender = 0">
+                                            ذكر <i class="fa-solid fa-mars"></i>
+                                        </button>
+                                        <input 
+                                            type="text" 
+                                            class="form-input date-input" 
+                                            v-model="displayDate" 
+                                            @input="formatDate"
+                                            @focus="onDateFocus"
+                                            @keydown="onDateKeyDown"
+                                            placeholder="00/00/0000"
+                                            maxlength="10"
+                                        />
+                                    </div>
+
+                                    <div class="form-note">
+                                        (تأكد من إدخال بيانات واقعية وصحيحة!)
+                                    </div>
+
+                                    <!-- Action Buttons -->
+                                    <div class="action-buttons">
+                                        <button class="btn-cancel" @click="cancelCreate">
+                                            <i class="fa-solid fa-xmark"></i>
+                                        </button>
+                                        <button class="btn-start" @click="create_character">إنشاء</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </transition>
+                    </div>
+                </div>
+            </div>
+        </v-app>
+
+        <script type="text/javascript" src="profanity.js"></script>
+        <script type="text/javascript" src="validation.js"></script>
+        <script type="text/javascript" src="translations.js"></script>
+        <script type="text/javascript" src="app.js"></script>
+    </body>
+</html>
