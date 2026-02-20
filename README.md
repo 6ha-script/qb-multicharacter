@@ -25,7 +25,7 @@
 ضع مجلد السكربت داخل مجلد `resources` في السيرفر:
 ```
 resources/
-└── [standalone]/
+└── [qb]/
     └── qb-multicharacter/
 ```
 
